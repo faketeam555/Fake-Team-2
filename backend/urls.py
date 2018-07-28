@@ -20,5 +20,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('django-rq/', include('django_rq.urls')),
     path('data/', include('analysis.urls')),
-    path('content/', include('analysis.urls')),
+    path('content/', include('datastore.urls')),
 ]
