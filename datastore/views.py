@@ -1,7 +1,9 @@
 import json
 from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 
+@require_http_methods(['GET'])
 def articles(request):
     article_list = [
         {
@@ -18,6 +20,7 @@ def articles(request):
     return JsonResponse(article_list)
 
 
+@require_http_methods(['GET'])
 def article_detail(request, article_id):
     return JsonResponse({
         'id': 'article_id',

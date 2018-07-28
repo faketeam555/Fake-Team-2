@@ -1,6 +1,5 @@
 import pandas
-
-from spellchecker import SpellChecker
+import hashlib
 
 from django.utils import timezone
 
@@ -15,22 +14,13 @@ for index, row in data_frame.iterrows():
     if type(row['Message']) == float:
         row['Message'] = ''
 
-    normalized = normalize(row['Message'])
-
-    spell = SpellChecker()
-    spell_corrected = ''
-    for word in normalized.split(' '):
-        spell_corrected += (' ' + spell.correction(word))
-    unknowns = ''
-    for word in spell.unknown(normalized.split(' ')):
-        unknowns += (' ' + word)
-
+    normal_text = normalize(row['Message'])
     Message.objects.create(
         full_text=row['Message'],
-        label='N' if row['Fake'] else 'F',
+        label='F' if row['Fake'] else 'N',
         is_confirmed=True,
+        is_real=False,
         updated_at=timezone.now(),
-        normalized_text=normalized,
-        spell_corrected_text=spell_corrected,
-        unknown_words=unknowns
+        normalized_text=normal_text,
+        hash_value=hashlib.sha256(normal_text.encode('utf-8')).hexdigest()
     )
