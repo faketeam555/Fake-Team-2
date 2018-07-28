@@ -1,12 +1,14 @@
 import json
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 from backend.settings import MIN_MSG_LEN
-from ml_models.tv_nb_clr import get_tv_nb_clr
+# from ml_models.tv_nb_clr import get_tv_nb_clr
 
 # tv_nb_clr = get_tv_nb_clr()
 
 
+@require_http_methods(['POST'])
 def check(request):
     data = json.loads(request.body)
     if len(data['message']) < MIN_MSG_LEN:
@@ -23,20 +25,21 @@ def check(request):
         'label': 'UC',
         'title': 'Under Construction',
         'description': 'The system is under construction',
-        'frequent_id': None
+        'frequent': None
     })
 
 
+@require_http_methods(['POST'])
 def report(request):
     data = json.loads(request.body)
     return JsonResponse({
         'label': 'UC',
         'title': 'Under Construction',
         'description': 'The system is under construction',
-        'frequent_id': None
+        'frequent': None
     })
 
 
 def bot_check(request):
     data = json.loads(request.body)
-    return HttpResponse()
+    return JsonResponse({})

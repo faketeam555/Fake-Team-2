@@ -127,14 +127,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Redis queues
-
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0
-    }
-}
+#
+# RQ_QUEUES = {
+#     'default': {
+#         'HOST': 'localhost',
+#         'PORT': 6379,
+#         'DB': 0
+#     }
+# }
 
 # PUMC
 

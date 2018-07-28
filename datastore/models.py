@@ -62,6 +62,7 @@ class Frequent(models.Model):
 
 class Article(models.Model):
     title = models.ForeignKey(Message, null=True, on_delete=models.SET_NULL)
+    verified_by = models.TextField()
     content = models.URLField()
     label = models.CharField(max_length=1, default=UNLABELLED_DEFAULT)
 
