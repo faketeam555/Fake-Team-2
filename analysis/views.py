@@ -21,6 +21,9 @@ if 'runserver' in sys.argv:
 def check(request):
     data = json.loads(request.body)
     message = data['message'].strip()
+    normalized_text = normalize(message)
+    hash_value = hashlib.sha256(normalized_text.encode('utf-8')).hexdigest()
+
     if len(message) < MIN_MSG_LEN:
         response = HttpResponse(json.dumps({
             'error': 'tts',
@@ -37,11 +40,14 @@ def check(request):
              'Looks like a normal message')
 
     description = CONTACT_MESSAGE
-    messages = Message.objects.filter(normalized_text=normalize(message))
     frequent = None
+    messages = Message.objects.filter(normalized_text=normalized_text)
     if messages:
-        frequents = messages[0].frequent_set.all()
-        frequent = frequents[0] if len(frequents) else None
+        frequent = Frequent.objects.get_or_create(
+            normalized_text=normalized_text,
+            hash_value=hash_value,
+            count=len(messages) + 1
+        )
 
     return JsonResponse({
         'label': label,
@@ -57,6 +63,7 @@ def report(request):
     message = data['message'].strip()
     normalized_text = normalize(message)
     hash_value = hashlib.sha256(normalized_text.encode('utf-8')).hexdigest()
+
     if len(message) < MIN_MSG_LEN:
         response = HttpResponse(json.dumps({
             'error': 'tts',
@@ -114,7 +121,15 @@ def dashboard(request):
     Literal.objects.filter(name__in=[item['name'] for item in dupes])
     """
 
-    frequents_list = Frequent.objects.order_by('-updated_at')[:100]
+    frequents_list = Frequent.objects.order_by('count')[:100]
+    template = loader.get_template('analysis/dashboard.html')
+    return HttpResponse(
+        template.render({'frequents_list': frequents_list}, request)
+    )
+
+
+def flag_as_fake(request):
+    frequents_list = Frequent.objects.order_by('count')[:100]
     template = loader.get_template('analysis/dashboard.html')
     return HttpResponse(
         template.render({'frequents_list': frequents_list}, request)
