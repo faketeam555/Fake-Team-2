@@ -7,6 +7,7 @@
         <th>Location</th>
         <th>Updated</th>
         <th>Created</th>
+        <th>Flag ID</th>
     </tr>
     {% for frequent in frequents_list %}
         <tr>
@@ -16,6 +17,7 @@
             <td>{{ frequent.location }}</td>
             <td>{{ frequent.updated_at }}</td>
             <td>{{ frequent.created_at }}</td>
+            <td>{{ frequent.id }}</td>
         </tr>
     {% endfor %}
     </table>

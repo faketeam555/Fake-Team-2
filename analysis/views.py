@@ -1,13 +1,17 @@
+import hashlib
 import json
 
 import sys
+
 from django.http import JsonResponse, HttpResponse
 from django.template import loader
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
-from backend.settings import MIN_MSG_LEN
-from datastore.models import Frequent
+from backend.settings import MIN_MSG_LEN, CONTACT_MESSAGE
+from datastore.models import Frequent, Message
 from ml_models.tv_nb_clr import get_tv_nb_clr
+from ml_models.utils import normalize
 
 if 'runserver' in sys.argv:
     tv_nb_clr = get_tv_nb_clr()
@@ -16,7 +20,8 @@ if 'runserver' in sys.argv:
 @require_http_methods(['POST'])
 def check(request):
     data = json.loads(request.body)
-    if len(data['message']) < MIN_MSG_LEN:
+    message = data['message'].strip()
+    if len(message) < MIN_MSG_LEN:
         response = HttpResponse(json.dumps({
             'error': 'tts',
             'message': 'Text too short'
@@ -24,29 +29,79 @@ def check(request):
         response.status_code = 202
         return response
 
-    msg_mtx = tv_nb_clr[0].transform([data['message']])
+    msg_mtx = tv_nb_clr[0].transform([message])
     nb_p = tv_nb_clr[1].predict(msg_mtx.todense())
 
     label = 'F' if nb_p[0] == 'F' else 'N'
     title = ('Looks like a malicious message' if nb_p[0] == 'F' else
              'Looks like a normal message')
 
+    description = CONTACT_MESSAGE
+    messages = Message.objects.filter(normalized_text=normalize(message))
+    frequent = None
+    if messages:
+        frequents = messages[0].frequent_set.all()
+        frequent = frequents[0] if len(frequents) else None
+
     return JsonResponse({
         'label': label,
         'title': title,
-        'description': 'There will be a description here soon',
-        'frequent': None
+        'description': description,
+        'frequent': frequent
     })
 
 
 @require_http_methods(['POST'])
 def report(request):
     data = json.loads(request.body)
+    message = data['message'].strip()
+    normalized_text = normalize(message)
+    hash_value = hashlib.sha256(normalized_text.encode('utf-8')).hexdigest()
+    if len(message) < MIN_MSG_LEN:
+        response = HttpResponse(json.dumps({
+            'error': 'tts',
+            'message': 'Text too short'
+        }), content_type='application/json')
+        response.status_code = 202
+        return response
+
+    msg_mtx = tv_nb_clr[0].transform([message])
+    nb_p = tv_nb_clr[1].predict(msg_mtx.todense())
+
+    label = 'F' if nb_p[0] == 'F' else 'N'
+    title = ('Looks like a malicious message' if nb_p[0] == 'F' else
+             'Looks like a normal message')
+
+    description = CONTACT_MESSAGE
+    messages = Message.objects.filter(normalized_text=normalized_text)
+    if messages:
+        frequent = Frequent.objects.get_or_create(
+            normalized_text=normalized_text,
+            hash_value=hash_value,
+            count=len(messages) + 1
+        )
+    else:
+        frequent = Frequent.objects.get(
+            normalized_text=normalized_text,
+            count=1
+        )
+        new_message = Message.objects.create(
+            full_text=message,
+            normalized_text=normalized_text,
+            hash_value=hash_value,
+            updated_at=timezone.now(),
+            is_real=True,
+            label='R'
+        )
+        frequent.messages.add(new_message)
+        frequent.save()
+
     return JsonResponse({
-        'label': 'UC',
-        'title': 'Under Construction',
-        'description': 'The system is under construction',
-        'frequent': None
+        'label': label,
+        'title': title,
+        'description': description,
+        'frequent': frequent,
+        'message': 'Successfully reported'
     })
 
 

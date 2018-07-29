@@ -1,9 +1,7 @@
 import json
 
-from django.core.signing import JSONSerializer
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
-from django.core import serializers
 
 from datastore.models import Article
 

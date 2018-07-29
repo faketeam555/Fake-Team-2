@@ -145,3 +145,4 @@ COORD_DIGITS = 9
 COORD_DECIMAL = 6
 UNLABELLED_DEFAULT = '?'
 TITLE_LEN = 100
+CONTACT_MESSAGE = 'If you have good reasons to believe that the message has authenticity please contact here.'

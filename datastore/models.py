@@ -15,6 +15,7 @@ class Message(models.Model):
     is_real = models.BooleanField(default=False)
     is_trained = models.BooleanField(default=False)
     is_confirmed = models.BooleanField(default=False)
+    is_manually_flagged = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

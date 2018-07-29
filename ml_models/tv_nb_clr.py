@@ -1,11 +1,9 @@
 import pickle
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB
-from sklearn.svm import LinearSVC, SVC
+from sklearn.svm import LinearSVC
 
 from datastore.models import Message
 
@@ -24,10 +22,7 @@ def get_tv_nb_clr():
     print('Training data transformed')
     ftr_tt_mtx = tv.transform(ftr_tt)
     print('Testing data transformed', ftr_tr_mtx.shape)
-    # nb_clr = LinearSVC().fit(ftr_tr_mtx, lbl_tr)
-    # nb_clr = GaussianNB().fit(ftr_tr_mtx, lbl_tr)
-    nb_clr = SVC(probability=True).fit(ftr_tr_mtx, lbl_tr)
-    # nb_clr = LogisticRegression().fit(ftr_tr_mtx, lbl_tr)
+    nb_clr = LinearSVC().fit(ftr_tr_mtx, lbl_tr)
     print('Classifier fit')
     nb_predictions = nb_clr.predict(ftr_tt_mtx)
     print('Test predictions done')
@@ -38,3 +33,10 @@ def get_tv_nb_clr():
     print('CM:\n', nb_cm)
     print('Hooray!!!')
     return tv, nb_clr
+
+
+# from sklearn.linear_model import LogisticRegression
+# from sklearn.naive_bayes import GaussianNB
+# nb_clr = GaussianNB().fit(ftr_tr_mtx, lbl_tr)
+# nb_clr = SVC(probability=True).fit(ftr_tr_mtx, lbl_tr)
+# nb_clr = LogisticRegression().fit(ftr_tr_mtx, lbl_tr)
