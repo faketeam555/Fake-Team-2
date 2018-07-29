@@ -1,8 +1,6 @@
 import hashlib
 import json
 
-import sys
-
 from django.http import JsonResponse, HttpResponse
 from django.template import loader
 from django.utils import timezone
