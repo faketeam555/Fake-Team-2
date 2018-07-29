@@ -6,6 +6,6 @@ urlpatterns = [
     path('check/', check, name='check'),
     path('report/', report, name='report'),
     path('dashboard/', dashboard, name='dashboard'),
-    path('flag-fake/<int:id>', flag_as_fake, name='flag_as_fake'),
+    path('flag-fake/<int:message_id>', flag_as_fake, name='flag_as_fake'),
     path('bot-check/', bot_check, name='bot_check'),
 ]

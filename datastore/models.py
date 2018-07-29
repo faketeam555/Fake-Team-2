@@ -21,6 +21,9 @@ class Message(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     confirmed_at = models.DateTimeField(null=True)
 
+    def __str__(self):
+        return self.full_text[:10]
+
 
 class Link(models.Model):
     message = models.ForeignKey(Message, null=True, on_delete=models.SET_NULL)
@@ -43,16 +46,22 @@ class User(models.Model):
 
     messages = models.ManyToManyField(Message)
 
+    def __str__(self):
+        return self.phone
+
 
 class Article(models.Model):
     title = models.CharField(max_length=TITLE_LEN)
     verified_by = models.TextField()
-    content = models.URLField()
+    content = models.TextField()
 
     users = models.ManyToManyField(User)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title[:10]
 
 
 class Frequent(models.Model):
@@ -67,3 +76,6 @@ class Frequent(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.normalized_text[:10]

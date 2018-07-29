@@ -4,8 +4,8 @@ from datastore.models import Message, Link, User, Article, Frequent
 
 
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ('full_text', 'label', 'is_confirmed')
-    list_filter = ('label', 'is_confirmed')
+    list_display = ('full_text', 'label', 'is_confirmed', 'is_manually_flagged')
+    list_filter = ('label', 'is_confirmed', 'is_manually_flagged')
     search_fields = ('full_text', 'normalized_text')
 
 

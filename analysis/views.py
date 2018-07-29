@@ -38,8 +38,8 @@ def check(request):
     label = 'F' if nb_p[0] == 'F' else 'N'
     title = ('Looks like a malicious message' if nb_p[0] == 'F' else
              'Looks like a normal message')
-
     description = CONTACT_MESSAGE
+
     frequent = None
     messages = Message.objects.filter(normalized_text=normalized_text)
     if messages:
@@ -49,6 +49,18 @@ def check(request):
             count=len(messages) + 1
         )
 
+    flag_message = Message.objects.filter(
+        is_manually_flagged=True,
+        normalized_text=normalized_text
+    )
+    if flag_message:
+        label = 'F'
+        title = 'Looks like a malicious message'
+        frequent = Frequent.objects.get_or_create(
+            normalized_text=normalized_text,
+            hash_value=hash_value,
+            count=len(messages) + 1
+        )
     return JsonResponse({
         'label': label,
         'title': title,
@@ -78,8 +90,8 @@ def report(request):
     label = 'F' if nb_p[0] == 'F' else 'N'
     title = ('Looks like a malicious message' if nb_p[0] == 'F' else
              'Looks like a normal message')
-
     description = CONTACT_MESSAGE
+
     messages = Message.objects.filter(normalized_text=normalized_text)
     if messages:
         frequent = Frequent.objects.get_or_create(
@@ -128,12 +140,11 @@ def dashboard(request):
     )
 
 
-def flag_as_fake(request):
-    frequents_list = Frequent.objects.order_by('count')[:100]
-    template = loader.get_template('analysis/dashboard.html')
-    return HttpResponse(
-        template.render({'frequents_list': frequents_list}, request)
-    )
+def flag_as_fake(request, message_id):
+    message = Message.objects.get(pk=message_id)
+    message.is_manually_flagged = True
+    message.save()
+    return JsonResponse({'message': 'Flagged'})
 
 
 @require_http_methods(['POST'])
