@@ -20,11 +20,11 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'verified_by', 'label')
+    list_display = ('title', 'verified_by')
 
 
 class FrequentAdmin(admin.ModelAdmin):
-    list_display = ('normalized_text', 'count', 'location')
+    list_display = ('normalized_text', 'label', 'count', 'location')
 
 
 admin.site.register(Message, MessageAdmin)

@@ -1,8 +1,9 @@
 from django.db import models
 
 from backend.settings import (
-    SHA256_LEN, PHONE_NUM_LEN, COORD_DIGITS, UNLABELLED_DEFAULT, COORD_DECIMAL,
-    TITLE_LEN)
+    SHA256_LEN, PHONE_NUM_LEN, COORD_DIGITS,
+    UNLABELLED_DEFAULT, COORD_DECIMAL, TITLE_LEN
+)
 
 
 class Message(models.Model):
@@ -46,7 +47,6 @@ class Article(models.Model):
     title = models.CharField(max_length=TITLE_LEN)
     verified_by = models.TextField()
     content = models.URLField()
-    label = models.CharField(max_length=1, default=UNLABELLED_DEFAULT)
 
     users = models.ManyToManyField(User)
 
@@ -59,7 +59,7 @@ class Frequent(models.Model):
     hash_value = models.CharField(max_length=SHA256_LEN, null=True)
     label = models.CharField(max_length=1, default=UNLABELLED_DEFAULT)
     count = models.IntegerField(default=0)
-    location = models.CharField(max_length=100)
+    location = models.CharField(max_length=TITLE_LEN)
 
     messages = models.ForeignKey(Message, null=True, on_delete=models.SET_NULL)
     article = models.OneToOneField(Article, null=True, on_delete=models.SET_NULL)

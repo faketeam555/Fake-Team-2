@@ -1,0 +1,24 @@
+{% if frequents_list %}
+    <table>
+    <tr>
+        <th>Normalized Text</th>
+        <th>Label</th>
+        <th>Message Count</th>
+        <th>Location</th>
+        <th>Updated</th>
+        <th>Created</th>
+    </tr>
+    {% for frequent in frequents_list %}
+        <tr>
+            <td>{{ frequent.normalized_text }}</td>
+            <td>{{ frequent.label }}</td>
+            <td>{{ frequent.count }}</td>
+            <td>{{ frequent.location }}</td>
+            <td>{{ frequent.updated_at }}</td>
+            <td>{{ frequent.created_at }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% else %}
+    <p>No viral messages are trending right now.</p>
+{% endif %}
