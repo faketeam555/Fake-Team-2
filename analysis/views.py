@@ -13,8 +13,7 @@ from datastore.models import Frequent, Message
 from ml_models.tv_nb_clr import get_tv_nb_clr
 from ml_models.utils import normalize
 
-if 'runserver' in sys.argv:
-    tv_nb_clr = get_tv_nb_clr()
+tv_nb_clr = get_tv_nb_clr()
 
 
 @require_http_methods(['POST'])
